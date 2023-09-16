@@ -10,4 +10,6 @@ import com.practice.ecommerce.entities.Role;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, UUID> {
 
+    Role existsByRoleName(String roleName);
+
 }
