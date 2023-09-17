@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,14 +54,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> loginHandler(LoginCredential loginCredential) {
+    public ResponseEntity<Map<String, Object>> loginHandler(@Valid @RequestBody LoginCredential loginCredential) {
 
-        System.out.println("authCredential");
         UsernamePasswordAuthenticationToken authCredential =
                 new UsernamePasswordAuthenticationToken(loginCredential.getEmail(), loginCredential.getPassword());
 
+        System.out.println("authCredential" + authCredential);
 
-        authenticationManager.authenticate(authCredential);
+        Authentication authResult = authenticationManager.authenticate(authCredential);
+        System.out.println("Authentication Token After Authentication: " + authResult);
 
         String token = jwtUtils.generateToken(loginCredential.getEmail());
         UserDTO userFromDB = userService.login(loginCredential);

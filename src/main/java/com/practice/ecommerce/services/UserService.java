@@ -29,6 +29,17 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    public User getUserByEmail(String firstName) {
+        User isUserFound = userRepository.existsByFirstName(firstName);
+
+        System.out.println(isUserFound);
+
+
+        return null;
+
+
+    }
+
     public UserDTO registerUser(UserDTO userDTO) {
         try {
 
