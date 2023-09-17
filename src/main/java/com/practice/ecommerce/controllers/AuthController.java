@@ -35,8 +35,10 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-//    public ResponseEntity<UserDTO> registerHandler(@Valid @RequestBody UserDTO userDTO) throws UserNotFoundException {
-    public ResponseEntity<Map<String, Object>> registerHandler(@Valid @RequestBody UserDTO userDTO) throws UserNotFoundException {
+    // public ResponseEntity<UserDTO> registerHandler(@Valid @RequestBody UserDTO
+    // userDTO) throws UserNotFoundException {
+    public ResponseEntity<Map<String, Object>> registerHandler(@Valid @RequestBody UserDTO userDTO)
+            throws UserNotFoundException {
         UserDTO registerUser = userService.registerUser(userDTO);
 
         String token = jwtUtils.generateToken(registerUser.getEmail());
@@ -46,17 +48,17 @@ public class AuthController {
         response.put("token", token);
         response.put("user data", registerUser);
 
-//        return new ResponseEntity<>(registerUser, HttpStatus.CREATED);
+        // return new ResponseEntity<>(registerUser, HttpStatus.CREATED);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginHandler(LoginCredential loginCredential) {
 
+        System.out.println("authCredential");
         UsernamePasswordAuthenticationToken authCredential =
                 new UsernamePasswordAuthenticationToken(loginCredential.getEmail(), loginCredential.getPassword());
 
-        System.out.println("authCredential" + authCredential);
 
         authenticationManager.authenticate(authCredential);
 

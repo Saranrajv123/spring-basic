@@ -1,6 +1,9 @@
 package com.practice.ecommerce.config;
 
 import jakarta.servlet.http.HttpServletResponse;
+
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Bean
@@ -25,22 +28,29 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeHttpRequests()
-                .requestMatchers(AppConstants.PUBLIC_URLS).permitAll()
-                .requestMatchers(AppConstants.USER_URLS).hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(AppConstants.ADMIN_URLS).hasAnyAuthority("ADMIN")
-                .anyRequest()
-                .authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(
-                        ((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UnAuthorized"))
-                )
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http.build();
+        http.authorizeHttpRequests((auth) -> auth.requestMatchers(AppConstants.PUBLIC_URLS).permitAll()
+                .requestMatchers(AppConstants.ADMIN_URLS).hasAnyAuthority("ADMIN")
+                .requestMatchers(AppConstants.USER_URLS).hasAnyAuthority("USER", "ADMIN")
+                .anyRequest()
+                .authenticated());
+        // http.csrf().disable().authorizeHttpRequests()
+        // .requestMatchers(AppConstants.PUBLIC_URLS).permitAll()
+        // .requestMatchers(AppConstants.USER_URLS).hasAnyAuthority("USER", "ADMIN")
+        // .requestMatchers(AppConstants.ADMIN_URLS).hasAnyAuthority("ADMIN")
+        // .anyRequest()
+        // .authenticated()
+        // .and()
+        // .exceptionHandling().authenticationEntryPoint(
+        // ((request, response, authException) ->
+        // response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+        // "UnAuthorized")))
+        // .and()
+        // .sessionManagement()
+        // .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        return http.csrf(csrf -> csrf.disable()).build();
     }
 
     @Bean
